@@ -73,7 +73,8 @@ function initListeners() {
 	$('#signin-next').click(authenticate);
 
 	$('#signup-next').click(function(){
-		addUser(token);
+		geoLocation();
+		//addUser(token);
 	});
 
 	$('#signup-back').click(function(){
@@ -89,7 +90,8 @@ function initListeners() {
 function main() {
 	initListeners();
 
-	if (checkConnection()) {
+	//if (checkConnection()) {
+	if (true) {
 		initMap();
 		authApp(appHasToken);
 	} else {
@@ -253,7 +255,7 @@ function authUser(login, password, onSuccess) {
 }
 
 // Adds new user.
-function addUser(token) {
+function addUser(lat, lng) {
 	var login = $('#signup-login').val();
 	var password = $('#signup-password').val();
 	
@@ -276,7 +278,8 @@ function addUser(token) {
 			alert('User has been successfully added, user id = ' + response.id);
 			
 			authUser(login, password, function(response){
-				geoLocation();	
+				// geoLocation();
+				addLocation(lat, lng);	
 			});		
 		},
 		error: errorCallback
@@ -303,8 +306,6 @@ function addLocation(lat, lng) {
 
 			currentUserId = response.geo_data.user_id;
 			
-			alert(currentUserId);
-			
 			getAllLocations();
 
 			$('#window2').fadeOut();
@@ -323,10 +324,10 @@ function geoLocation() {
 		var lat = position.coords.latitude;
 		var lng = position.coords.longitude;
 		
-		addLocation(lat, lng);
-
+		addUser(lat, lng);
+		
 		map_canvas.setCenter(latLng);
-	}, onGeoLocationError);
+	}, onGeoLocationError, { maximumAge : 30000, timeout : 50000, enableHighAccuracy : true });
 }
 
 function onGeoLocationError(error) {
